@@ -37,10 +37,13 @@ export default function App() {
   // HU03 y HU04: Registrar y validar tareas
   const agregarTarea = () => {
     if (titulo.trim() === '') {
-      Alert.alert(
-        'Campo obligatorio',
-        'Por favor, escribe el título de la tarea.'
-      );
+      const mensaje = 'Por favor, escribe el título de la tarea.';
+
+      if (typeof globalThis.alert === 'function') {
+        globalThis.alert(`Campo obligatorio\n\n${mensaje}`);
+      } else {
+        Alert.alert('Campo obligatorio', mensaje);
+      }
       return;
     }
 
@@ -77,6 +80,22 @@ export default function App() {
 
   // HU07: Eliminar una tarea
   const eliminarTarea = (id) => {
+    const confirmarEliminacion = () => {
+      setTareas(tareas.filter((tarea) => tarea.id !== id));
+    };
+
+    if (typeof globalThis.confirm === 'function') {
+      const confirmada = globalThis.confirm(
+        'Eliminar tarea\n\n¿Estás segura de que deseas eliminar esta tarea?'
+      );
+
+      if (confirmada) {
+        confirmarEliminacion();
+      }
+
+      return;
+    }
+
     Alert.alert(
       'Eliminar tarea',
       '¿Estás segura de que deseas eliminar esta tarea?',
@@ -88,9 +107,7 @@ export default function App() {
         {
           text: 'Eliminar',
           style: 'destructive',
-          onPress: () => {
-            setTareas(tareas.filter((tarea) => tarea.id !== id));
-          }
+          onPress: confirmarEliminacion
         }
       ]
     );
@@ -406,11 +423,10 @@ const styles = StyleSheet.create({
     borderTopColor: '#A87963',
     marginTop: 15,
     paddingTop: 11,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
-    gap: 8
+    gap: 7
   },
 
   nombre: {
@@ -426,7 +442,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#704333',
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 20
+    borderRadius: 20,
+    marginTop: 1
   },
 
   tituloSeccion: {
